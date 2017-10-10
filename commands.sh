@@ -29,9 +29,11 @@ ssh-keygen -t rsa -b 4096 -C "steffansluis@gmail.com" -f ~/.ssh/id_rsa -N ''
 wget https://github.com/github/hub/releases/download/v2.2.9/hub-linux-arm64-2.2.9.tgz
 tar -xzf hub-linux-arm64-2.2.9.tgz
 sudo hub-linux-arm64-2.2.9/install
+eval "$(hub alias -s)"
 
 git config --global user.email "steffansluis@gmail.com"
 git config --global user.name "Steffan Sluis"
+git config core.editor "vim"
 
 # TODO: Set up ZSH completion
 
@@ -40,6 +42,8 @@ mkdir -p ~/Projects
 mkdir -p ~/Projects/TU
 mkdir -p ~/Projects/SEC
 mkdir -p ~/Projects/feedbackfruits
+
+mkdir -p ~/Projects/feedbackfruits/knowledge
 
 # Atom
 sudo add-apt-repository ppa:webupd8team/atom -y
@@ -75,6 +79,11 @@ apm-beta install atom-typescript
 apm-beta install ide-java
 apm-beta install ide-typescript
 
+echo "
+alias atom=atom-beta
+alias apm=apm-beta
+" >> ~/.zshrc
+
 # Eclipse IDE :(
 wget http://ftp-stud.fht-esslingen.de/pub/Mirrors/eclipse/oomph/epp/oxygen/R/eclipse-inst-linux64.tar.gz
 tar -xzf eclipse-inst-linux64.tar.gz
@@ -85,6 +94,11 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.4/install.sh | b
 nvm install 8
 nvm use 8
 npm install -g yarn
+
+# RVM
+sudo apt-get install software-properties-common
+sudo apt-add-repository -y ppa:rael-gc/rvm
+sudo apt-get install rvm
 
 # Docker
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -100,6 +114,72 @@ sudo apt-get install docker-ce
 sudo groupadd docker
 sudo gpasswd -a $USER docker
 
+# Heroku CLI
+# Note: requires sudo, so should be done differently
+wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+
+# Heroku CLI plugins
+heroku plugins:install heroku-accounts
+
+
 # Mendeley
 wget https://desktop-download.mendeley.com/download/apt/pool/main/m/mendeleydesktop/mendeleydesktop_1.17.11-stable_amd64.deb
 sudo dpkg -i mendeleydesktop_1.17.11-stable_amd64.deb
+
+# Redis
+sudo apt install build-essential tcl
+cd /opt
+sudo curl -O http://download.redis.io/redis-stable.tar.gz
+sudo tar xzvf redis-stable.tar.gz
+cd /opt/redis-stable
+sudo chown -R steffan:steffan /opt/redis-stable
+make
+make test
+sudo make install
+sudo mkdir /etc/redis
+sudo cp /opt/redis-stable/redis.conf /etc/redis
+
+# TODO: Fix the editing part
+sudo vim /etc/redis/redis.conf
+# Make two changes there:
+# supervised no to supervised systemd
+# dir to dir /var/lib/redis # for persistent data dump
+
+sudo vim /etc/systemd/system/redis.service
+
+# [Unit]
+# Description=Redis In-Memory Data Store
+# After=network.target
+#
+# [Service]
+# User=redis
+# Group=redis
+# ExecStart=/usr/local/bin/redis-server /etc/redis/redis.conf
+# ExecStop=/usr/local/bin/redis-cli shutdown
+# Restart=always
+#
+# [Install]
+# WantedBy=multi-user.target
+
+sudo adduser --system --group --no-create-home redis
+sudo mkdir /var/lib/redis   # create directory
+sudo chown redis:redis /var/lib/redis   # make redis own /var/lib/redis
+sudo chmod 770 /var/lib/redis   # adjust permission
+
+
+# Postgres
+sudo apt-get install postgresql postgresql-contrib libpq-dev
+sudo -u postgres createuser steffan -s
+
+# MongoDB
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+sudo apt-get install -y mongodb-org
+sudo systemctl start mongod
+
+# ElasticSearch
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+sudo apt-get install apt-transport-https
+echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-5.x.list
+sudo apt-get update
+sudo apt-get install elasticsearch
