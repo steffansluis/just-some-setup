@@ -33,7 +33,7 @@ eval "$(hub alias -s)"
 
 git config --global user.email "steffansluis@gmail.com"
 git config --global user.name "Steffan Sluis"
-git config core.editor "vim"
+git config --global core.editor "vim"
 
 # TODO: Set up ZSH completion
 
@@ -41,6 +41,7 @@ git config core.editor "vim"
 mkdir -p ~/Projects
 mkdir -p ~/Projects/TU
 mkdir -p ~/Projects/SEC
+mkdir -p ~/Projects/knowledge-express
 mkdir -p ~/Projects/feedbackfruits
 
 mkdir -p ~/Projects/feedbackfruits/knowledge
@@ -61,6 +62,10 @@ sudo sh -c 'echo "deb http://repository.spotify.com stable non-free" >> /etc/apt
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys BBEBDCB318AD50EC6865090613B00F1FD2C19886
 sudo apt-get update
 sudo apt-get install spotify-client
+
+# Skype
+wget https://repo.skype.com/latest/skypeforlinux-64.deb
+sudo dpkg -i skypeforlinux-64.deb
 
 # Fingerprint things?
 # Fingerprint sensor not recognized on USB yet
@@ -121,6 +126,9 @@ wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
 # Heroku CLI plugins
 heroku plugins:install heroku-accounts
 
+# CircleCI CLI
+sudo curl -o /usr/local/bin/circleci https://circle-downloads.s3.amazonaws.com/releases/build_agent_wrapper/circleci
+sudo chmod +x /usr/local/bin/circleci
 
 # Mendeley
 wget https://desktop-download.mendeley.com/download/apt/pool/main/m/mendeleydesktop/mendeleydesktop_1.17.11-stable_amd64.deb
