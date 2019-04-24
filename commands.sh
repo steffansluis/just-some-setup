@@ -7,16 +7,18 @@ sudo apt-get install google-chrome-stable
 # ZSH
 sudo apt-get install curl zsh git
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+cp .zshrc ~
 
 # Vim
 sudo apt-get install vim
 
 # Tmux
 sudo apt-get install tmux
+cp .tmux.conf ~
 
 # This needs to be improved
 echo "
-if [ -z "$TMUX" ]
+if [ -z "\$TMUX" ]
 then
     tmux attach -t base || tmux new -s base
 fi
@@ -30,6 +32,14 @@ wget https://github.com/github/hub/releases/download/v2.2.9/hub-linux-arm64-2.2.
 tar -xzf hub-linux-arm64-2.2.9.tgz
 sudo hub-linux-arm64-2.2.9/install
 eval "$(hub alias -s)"
+
+mkdir -p ~/.zsh/completions
+curl https://raw.githubusercontent.com/github/hub/master/etc/hub.zsh_completion > ~/.zsh/completions/_hub
+
+echo "
+fpath=(~/.zsh/completions \$fpath)
+autoload -U compinit && compinit
+" >> ~/.zshrc
 
 git config --global user.email "steffansluis@gmail.com"
 git config --global user.name "Steffan Sluis"
@@ -83,6 +93,7 @@ apm-beta install atom-ide-ui
 apm-beta install atom-typescript
 apm-beta install ide-java
 apm-beta install ide-typescript
+a
 
 echo "
 alias atom=atom-beta
@@ -191,3 +202,12 @@ sudo apt-get install apt-transport-https
 echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-5.x.list
 sudo apt-get update
 sudo apt-get install elasticsearch
+
+# VirtualBox
+wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | sudo apt-key add -
+sudo sh -c 'echo "deb http://download.virtualbox.org/virtualbox/debian $(lsb_release -sc) contrib" >> /etc/apt/sources.list'
+sudo apt-get update
+sudo apt-get install virtualbox-5.1
+
+# Python
+sudo apt-get install python-virtualenv python-pip
