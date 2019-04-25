@@ -1,0 +1,42 @@
+defaults: &defaults
+  working_directory: ~/just-some-setup
+  docker:
+    - image: fedora:30
+      environment:
+        NODE_ENV: test
+
+fedora: &fedora
+  <<: *defaults
+
+ubuntu: &ubuntu
+  <<: *defaults
+  docker:
+    - image: ubuntu
+
+version: 2
+jobs:
+  build:
+    <<: *fedora
+    steps:
+      - checkout
+
+
+      # - restore_cache:
+      #     keys:
+      #     - node_modules-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+
+      # - run:
+      #     name: Install yarn 1.6.0
+      #     command: npm install --global yarn@1.6.0
+      #
+
+      # - save_cache:
+      #     paths:
+      #       - node_modules
+      #     key: node_modules-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+
+      # - run: yarn test
+      # - run: yarn run coverage
+
+      # - store_artifacts:
+      #     path: coverage
