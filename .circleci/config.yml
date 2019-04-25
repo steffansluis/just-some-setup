@@ -20,6 +20,14 @@ jobs:
     steps:
       - checkout
 
+      - run:
+          name: Install ZSH
+          command: sh install-scripts/base/zsh.sh
+
+      - run:
+          name: Test ZSH
+          command: sh test/install-scripts/base/zsh.sh
+
 
       # - restore_cache:
       #     keys:
